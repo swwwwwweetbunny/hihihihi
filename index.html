@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘 점심 뭐 드셨나요? | 디저트 추천</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #fcf8f2;
+            color: #4a3b32;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            max-width: 600px;
+            width: 100%;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #d97736;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            font-size: 1rem;
+            color: #8c7b70;
+            margin-bottom: 30px;
+        }
+
+        .category-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .btn-option {
+            background-color: #f7f1e5;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 15px 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #5c4a3e;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-option:hover {
+            background-color: #ffe8d6;
+            transform: translateY(-2px);
+        }
+
+        .btn-option.selected {
+            background-color: #d97736;
+            color: #ffffff;
+            border-color: #b55d20;
+        }
+
+        .result-card {
+            display: none;
+            background-color: #fff8f0;
+            border: 2px dashed #f0a868;
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .result-card h2 {
+            font-size: 1.4rem;
+            color: #d97736;
+            margin-bottom: 10px;
+        }
+
+        .result-card .dessert-icon {
+            font-size: 3.5rem;
+            margin: 15px 0;
+        }
+
+        .result-card .dessert-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .result-card .reason {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🍰 오늘 뭐 먹었지?</h1>
+        <p class="subtitle">오늘 먹은 점심 스타일에 딱 맞는 디저트를 추천해 드려요!</p>
+
+        <div class="category-title">오늘 점심 스타일을 선택해 주세요</div>
+        
+        <div class="options-grid">
+            <button class="btn-option" onclick="recommendDessert('spicy')">🔥 매콤한 음식<br><small>(떡볶이, 짬뽕, 마라탕 등)</small></button>
+            <button class="btn-option" onclick="recommendDessert('oily')">🥩 기름지거나 느꺼운 음식<br><small>(삼겹살, 버거, 돈까스 등)</small></button>
+            <button class="btn-option" onclick="recommendDessert('salty')">🍲 짭짤·국물 음식<br><small>(김치찌개, 부대찌개 등)</small></button>
+            <button class="btn-option" onclick="recommendDessert('light')">🥗 가벼운 음식<br><small>(샐러드, 샌드위치, 초밥 등)</small></button>
+        </div>
+
+        <div id="result" class="result-card">
+            <h2>오늘의 추천 디저트</h2>
+            <div id="dessert-icon" class="dessert-icon">🍨</div>
+            <div id="dessert-name" class="dessert-name">디저트 이름</div>
+            <p id="dessert-reason" class="reason">추천 이유가 여기에 들어갑니다.</p>
+        </div>
+    </div>
+
+    <script>
+        const dessertData = {
+            spicy: [
+                { name: "달콤 시원한 소프트 아이스크림", icon: "🍦", reason: "얼얼해진 혀와 속을 부드럽고 차가운 바닐라 아이스크림으로 달래주세요!" },
+                { name: "연유 듬뿍 팥빙수", icon: "🍧", reason: "매운맛 완벽 중화! 달콤하고 차가운 빙수가 입안의 열기를 날려줍니다." }
+            ],
+            oily: [
+                { name: "상큼한 큼직 에이드 (자몽/레몬)", icon: "🍹", reason: "입안에 남은 느끼함을 깔끔하게 날려줄 청량하고 상큼한 탄산 음료가 최적!" },
+                { name: "깔끔한 쌉싸름한 앗아(아이스 아메리카노)", icon: "☕", reason: "기름진 입안을 한 번에 정돈해 주는 최고의 클래식 조합입니다." }
+            ],
+            salty: [
+                { name: "달달한 부드러운 케이크 & 타르트", icon: "🍰", reason: "짠맛 뒤엔 역시 단맛! '단짠단짠'의 정석을 완성해 줄 디저트입니다." },
+                { name: "달콤 고소한 크림 라떼", icon: "☕", reason: "짭짤한 기운을 부드러운 우유와 달콤한 크림으로 감싸주세요." }
+            ],
+            light: [
+                { name: "쫀득한 마카롱 or 뚱카롱", icon: "🧁", reason: "점심을 가볍게 먹었으니 당 충전 완벽히! 아기자기하고 달콤한 디저트 추천." },
+                { name: "갓 구운 와플 / 크로플", icon: "🧇", reason: "부담 적게 먹은 점심 덕분에 든든한 디저트를 즐길 여유가 생겼어요!" }
+            ]
+        };
+
+        function recommendDessert(category) {
+            // 버튼 선택 스타일 적용
+            const buttons = document.querySelectorAll('.btn-option');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+
+            // 추천 디저트 랜덤 선별
+            const list = dessertData[category];
+            const randomIndex = Math.floor(Math.random() * list.length);
+            const selectedDessert = list[randomIndex];
+
+            // 결과 화면 업데이트
+            document.getElementById('dessert-icon').innerText = selectedDessert.icon;
+            document.getElementById('dessert-name').innerText = selectedDessert.name;
+            document.getElementById('dessert-reason').innerText = selectedDessert.reason;
+
+            // 결과 카드 노출
+            const resultCard = document.getElementById('result');
+            resultCard.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
